@@ -26,9 +26,9 @@ The purpose is to run a Single Ended, non strand specific experiment on a local 
 
     The other data that is required to complete this recipe is included in the repository within test_data directory.
 
-3. Set up the input.json:
+3. Set up the `input.json`:
 
-    Copy the following into input.json in your favorite text editor.
+    Copy the following into `input.json` in your favorite text editor.
 
 ```
 {
@@ -93,8 +93,9 @@ Make sure you have completed the steps for installation and Google Cloud setup d
   $ gsutil cp test_data/GRCh38_EBV.chrom.sizes gs://[YOUR_BUCKET_NAME]/reference/ 
 ```
 
-4. Set up the input.json
-    Copy the following into input.json in your favorite text editor.
+4. Set up the `input.json`:
+
+    Copy the following into `input.json` in your favorite text editor.
 
 ```
 {
@@ -116,14 +117,16 @@ Make sure you have completed the steps for installation and Google Cloud setup d
     "rna.kallisto.ramGB" : 4
 }
 ```
-    Replace `[YOUR_BUCKET_NAME]` with the name of the actual bucket you created.
+
+Replace `[YOUR_BUCKET_NAME]` with the name of the actual bucket you created.
 
 5. Run the pipeline:
 
 ```
   $ java -jar -Dconfig.file=backends/backend.conf -Dbackend.default=google -Dbackend.providers.google.config.project=[YOUR_PROJECT] -Dbackend.providers.google.config.root=gs://[YOUR_BUCKET_NAME]/output cromwell-34.jar run rna-seq-pipeline.wdl -i input.json -o workflow_opts/docker.json
 ```
-    Replave `[YOUR_PROJECT]` with the project id of the project you created, and `[YOUR_BUCKET_NAME]` with the name of the bucket you created.
+
+Replace `[YOUR_PROJECT]` with the project id of the project you created, and `[YOUR_BUCKET_NAME]` with the name of the bucket you created.
 
 6. See outputs in `gs://[YOUR_BUCKET_NAME]/outputs/rna/[RUNHASH]`. See [reference](reference.md) for details about the output directory structure.
 
