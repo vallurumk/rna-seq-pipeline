@@ -7,6 +7,5 @@ __author__ = 'Otto Jolanki'
 __version__ = '0.1.0'
 __license__ = 'MIT'
 
-import gzip
 import pysam
 
