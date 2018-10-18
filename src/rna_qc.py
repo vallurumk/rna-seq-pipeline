@@ -11,6 +11,7 @@ import argparse
 import json
 import logging
 from bisect import insort
+from collections import OrderedDict
 from pysam import AlignmentFile
 
 logger = logging.getLogger(__name__)
@@ -28,32 +29,33 @@ logger.addHandler(filehandler)
 
 
 class QCMetric(object):
-    """Container that holds the qc metric dict and the "master" key
-    of the said qc metric.
+    """Container that holds the qc metric as OrderedDict (sorted by keys of
+    the input dict) and the "master" key (name) of the said qc metric.
     """
 
     def __init__(self, qc_metric_name, qc_metric_dict):
         if not isinstance(qc_metric_dict, dict):
             raise TypeError('QCMetric data must be a dict.')
-        self._qc_metric_name = qc_metric_name
-        self._qc_metric_dict = qc_metric_dict
+        self._name = qc_metric_name
+        self._content = OrderedDict(
+            sorted(qc_metric_dict.items(), key=lambda x: x[0]))
 
     @property
-    def qc_metric_dict(self):
-        return self._qc_metric_dict
+    def content(self):
+        return self._content
 
     @property
-    def qc_metric_name(self):
-        return self._qc_metric_name
+    def name(self):
+        return self._name
 
     def __lt__(self, other):
-        return self.qc_metric_name < other.qc_metric_name
+        return self.name < other.name
 
     def __eq__(self, other):
-        return self.qc_metric_name == other.qc_metric_name
+        return self.name == other.name
 
     def __repr__(self):
-        return 'QCMetric(%r, %r)' % (self.qc_metric_name, self.qc_metric_dict)
+        return 'QCMetric(%r, %r)' % (self.name, self.content)
 
 
 class QCMetricRecord(object):
