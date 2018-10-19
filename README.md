@@ -16,9 +16,9 @@ HOWTO
 ------
 Howto guides [here](docs/howto.md)
 
-TUTORIALS
+FAQ
 -----------
-Tutorials [here](docs/tutorials.md)
+FAQ [here](docs/FAQ.md)
 
 REFERENCE
 ----------
