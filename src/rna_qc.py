@@ -30,7 +30,8 @@ logger.addHandler(filehandler)
 
 class QCMetric(object):
     """Container that holds the qc metric as OrderedDict (sorted by keys of
-    the input dict) and the "master" key (name) of the said qc metric.
+    the input dict) and the "master" key (name) of the said qc metric. Can be
+    instantiated from a regular dict.
     """
 
     def __init__(self, qc_metric_name, qc_metric_dict):
@@ -85,16 +86,41 @@ class QCMetricRecord(object):
         """
 
         assert qc_metric not in self._metrics, 'Metric with name {} already in record'.format(
-            qc_metric.qc_metric_name)
+            qc_metric.name)
         insort(self._metrics, qc_metric)
 
+    def to_ordered_dict(self):
+        """Returns an OrderedDict with the contents.
+
+        Returns: Ordered dict with structure as follows:
+            - Ordered as the metrics is
+            - Contents, assuming metrics = [qc1, qc2, qc3]:
+            {
+                qc1.name : qc1.content,
+                qc2.name : qc2.content,
+                qc3.name : qc3.content
+            }
+        """
+        result = OrderedDict()
+        for metric in self.metrics:
+            result.update({metric.name: metric.content})
+        return result
+
+    def __len__(self):
+        """
+        Delegated to metrics.
+        """
+        return len(self.metrics)
+
     def __iter__(self):
-        """Iterating QCMetricRecord is iterating over metrics.
+        """
+        Iterating QCMetricRecord is iterating over metrics.
         """
         return iter(self.metrics)
 
     def __repr__(self):
-        """Like __iter__, __repr__ is delegated to metrics.
+        """
+        Like __iter__, __repr__ is delegated to metrics.
         """
         return self.metrics.__repr__()
 

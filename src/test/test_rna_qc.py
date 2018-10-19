@@ -5,6 +5,8 @@ unittests for rna_qc.py
 import rna_qc
 import unittest
 from collections import OrderedDict
+from io import StringIO
+from unittest.mock import patch
 
 
 class TestQCMetric(unittest.TestCase):
@@ -32,4 +34,49 @@ class TestQCMetric(unittest.TestCase):
 
     def test_repr(self):
         obj = rna_qc.QCMetric('a', {1: 'x'})
-        self.assertEqual(obj.__repr__(), "QCMetric('a', OrderedDict([(1, 'x')]))")
+        self.assertEqual(obj.__repr__(),
+                         "QCMetric('a', OrderedDict([(1, 'x')]))")
+
+
+class TestQCMetricRecord(unittest.TestCase):
+    def setUp(self):
+        self.obj_a1 = rna_qc.QCMetric('a', {1: 2})
+        self.obj_a2 = rna_qc.QCMetric('a', {2: 3})
+        self.obj_b = rna_qc.QCMetric('b', {3: 4})
+        self.qc_record = rna_qc.QCMetricRecord()
+
+    def test_add(self):
+        self.assertEqual(len(self.qc_record), 0)
+        self.qc_record.add(self.obj_a1)
+        self.assertEqual(len(self.qc_record), 1)
+
+    def test_add_raises_error_when_add_same_twice(self):
+        self.qc_record.add(self.obj_a1)
+        with self.assertRaises(AssertionError):
+            self.qc_record.add(self.obj_a1)
+
+    def test_add_raises_error_when_add_with_same_name(self):
+        self.qc_record.add(self.obj_a1)
+        with self.assertRaises(AssertionError):
+            self.qc_record.add(self.obj_a2)
+
+    def test_to_ordered_dict(self):
+        self.qc_record.add(self.obj_a1)
+        self.qc_record.add(self.obj_b)
+        qc_dict = self.qc_record.to_ordered_dict()
+        self.assertEqual(qc_dict, OrderedDict([('a', {1: 2}), ('b', {3: 4})]))
+
+
+class TestRegularFunctions(unittest.TestCase):
+    @patch(
+        'builtins.open', return_value=StringIO('file\tcontains\tbad\ttsv\n'))
+    def test_read_dict_from_tsv_malformed(self, mock_open):
+        with self.assertRaises(AssertionError):
+            rna_qc.read_dict_from_tsv('bad.tsv')
+
+    @patch(
+        'builtins.open', return_value=StringIO('file\tcontains\ngood\ttsv\n'))
+    def test_read_dict_from_tsv_good_input(self, mock_open):
+        result_dict = rna_qc.read_dict_from_tsv('good.tsv')
+        self.assertEqual(result_dict['file'], 'contains')
+        self.assertEqual(result_dict['good'], 'tsv')
