@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y \
 # libcurses is a samtools dependency
     libncurses5-dev \ 
     r-base-core \
-    ghostscript=9.18~dfsg~0-0ubuntu2.9 && rm -rf /var/lib/apt/lists/*
+    ghostscript=9.18 && rm -rf /var/lib/apt/lists/*
 
 RUN pip3 install pandas
 RUN pip3 install pysam
